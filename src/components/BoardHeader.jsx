@@ -1,26 +1,19 @@
+import { Link } from "react-router-dom";
+
 export default function BoardHeader({ onWrite }) {
   return (
     <header>
-      <a className="brand" href="/">
+      <Link className="brand" to="/posts">
         게시판
-      </a>
+      </Link>
       <nav aria-label="주 메뉴">
-        <a className="post-link" href="/">
-          게시판
-        </a>
-        <a
-          className="write-link"
-          href="/"
-          onClick={(event) => {
-            event.preventDefault();
-            onWrite();
-          }}
-        >
+        <Link to="/posts">게시판</Link>
+        <Link className="write-link" to="/posts/new">
           글쓰기
-        </a>
-        <a className="login-link" href="/">
+        </Link>
+        <Link className="login-link" to="/login">
           로그인
-        </a>
+        </Link>
         <button className="logout-button" type="button">
           로그아웃
         </button>
