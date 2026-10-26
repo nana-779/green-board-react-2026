@@ -27,7 +27,8 @@ export default function PostList({ token }) {
         setPosts(result.data.content);
         setTotalPages(result.data.totalPages);
         setMessage(`전체 ${result.data.totalElements}개`);
-      });
+      })
+      .catch(() => setMessage("게시글을 불러올 수 없습니다"));
   }, [page, token]);
 
   return (

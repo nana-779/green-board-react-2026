@@ -47,7 +47,12 @@ export default function App() {
           }
         />
         <Route path="/posts/new" element={<PostForm onSave={savePost} />} />
-        <Route path="/posts/:postId" element={<PostDetail />} />
+        <Route
+          path="/posts/:postId"
+          element={
+            token ? <PostDetail token={token} /> : <Login onLogin={setToken} />
+          }
+        />
         <Route path="/login" element={<Login onLogin={setToken} />} />
       </Routes>
 
