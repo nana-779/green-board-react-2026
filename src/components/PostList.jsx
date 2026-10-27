@@ -1,8 +1,10 @@
 import { useSearchParams } from "react-router-dom";
 import PostItem from "./PostItem";
 import { useEffect, useState } from "react";
+import { useAuthContext } from "../useAuthContext";
 
-export default function PostList({ token }) {
+export default function PostList() {
+  const { token } = useAuthContext();
   const [searchParams, setSearchParams] = useSearchParams();
   const [posts, setPosts] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
@@ -16,7 +18,7 @@ export default function PostList({ token }) {
 
   useEffect(() => {
     console.log(token);
-    fetch(`http://127.0.0.1:8080/api/board?page=${page - 1}&size=10`, {
+    fetch(`http://127.0.0.1:8080/api/board?${page - 1}&size=10`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((response) => response.json())
