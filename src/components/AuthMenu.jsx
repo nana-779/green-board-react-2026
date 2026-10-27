@@ -1,8 +1,20 @@
-import { Link } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useAuthContext } from "../useAuthContext";
 
-export default function AuthMenu() {
-  const { token, clearAuth } = useAuthContext();
+export default function AuthMenu({ onStatus }) {
+  const { token, logout } = useAuthContext();
+  const navigate = useNavigate();
+
+  async function handleLogout() {
+    try {
+      onStatus("로그아웃 중 . . .");
+      await logout();
+      navigate("/login");
+      onStatus("");
+    } catch (error) {
+      onStatus(error.message);
+    }
+  }
 
   return (
     <>
@@ -12,7 +24,7 @@ export default function AuthMenu() {
         </Link>
       )}
       {token && (
-        <button className="logout-button" type="button" onClick={clearAuth}>
+        <button className="logout-button" type="button" onClick={handleLogout}>
           로그아웃
         </button>
       )}
