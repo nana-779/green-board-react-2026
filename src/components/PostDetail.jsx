@@ -5,6 +5,9 @@ export default function PostDetail({ token }) {
   const { postId } = useParams();
   // const post = posts.find((item) => String(item.id) === postId);
   const [post, setPost] = useState(null);
+  const [comments, setComments] = useState([]);
+  const [postMessage, setPostMessage] = useState("");
+  const [commentMessage, setCommentMessage] = useState("");
 
   useEffect(() => {
     if (Number(postId) < 1) {
@@ -20,17 +23,38 @@ export default function PostDetail({ token }) {
           { headers: { Authorization: `Bearer ${token}` } },
         );
         const result = await response.json();
+
         if (!response.ok || !result.success) {
           throw new Error(result.message || "게시물을 불러올 수 없습니다");
         }
+
         setPost(result.data);
+        setPostMessage("");
       } catch (error) {
-        console.log(error);
-        return;
+        setPostMessage(error.message);
+        return; // 게시글을 못 불러오면 댓글 요청도 하지 않음
+      }
+
+      try {
+        const response = await fetch(
+          `http://127.0.0.1:8080/api/comments/${postId}`,
+          { headers: { Authorization: `Bearer ${token}` } },
+        );
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+          throw new Error(result.message || "댓글을 불러올 수 없습니다");
+        }
+
+        setComments(result.data);
+        setCommentMessage("");
+      } catch (error) {
+        setCommentMessage(error.message);
       }
     }
+
     loadDetail();
-  }, [postId]);
+  }, [postId, token]);
 
   return (
     <main>
@@ -40,14 +64,27 @@ export default function PostDetail({ token }) {
           {(post && `${post.authorNickname} | ${post.createdDatetime}`) || ""}
         </p>
         <p id="post-content">{post?.content}</p>
-        <p id="post-message" role="status"></p>
+        <p id="post-message" role="status">
+          {postMessage}
+        </p>
       </article>
       <Link to="/posts"> 목록으로</Link>
       {post && (
         <section id="comments-section" aria-labelledby="comments-title">
           <h2 id="comments-title">댓글</h2>
-          <p id="comments-message" role="status"></p>
-          <ul id="comments-list"></ul>
+          <p id="comments-message" role="status">
+            {commentMessage}
+          </p>
+          <ul id="comments-list">
+            {comments.length === 0
+              ? "등록된 댓글이 없습니다"
+              : comments.map((comment) => (
+                  <li key={comment.id}>
+                    <strong>{comment.authorNickname}</strong>
+                    <p>{comment.content}</p>
+                  </li>
+                ))}
+          </ul>
           <form id="comments-form">
             <label htmlFor="comment-content">댓글 내용</label>
             <textarea
